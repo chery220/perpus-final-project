@@ -14,7 +14,7 @@
             <div class="flex justify-between h-16 items-center">
                 <!-- Logo & Brand -->
                 <div class="flex items-center space-x-3">
-                    <span class="text-xl font-bold tracking-wider text-mustard">📚 Perpustakaan</span>
+                    <span class="text-xl font-bold tracking-wider text-mustard">📚 Libria Perpustakaan</span>
                 </div>
                 <!-- Menu Navigasi -->
                 <div class="hidden md:flex space-x-6 text-sm font-medium items-center">

@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PorsiPas Perpus</title>
+    <title>Login - Libria Perpustakaan</title>
     <!-- Memuat Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-stone-100 font-sans antialiased flex items-center justify-center min-h-screen">
 
     <div class="w-full max-w-sm p-6 bg-white border border-stone-200 rounded-lg shadow-sm">
-        <!-- Judul Simpel Tanpa Logo & Tanpa Header Navbar -->
+        
         <div class="mb-6">
             <h1 class="text-xl font-bold text-stone-800">Login Perpustakaan</h1>
             <p class="text-xs text-stone-500 mt-1">Masukkan akun untuk mengakses sistem.</p>

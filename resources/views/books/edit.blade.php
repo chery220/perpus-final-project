@@ -15,7 +15,7 @@
 
     <!-- Form Container -->
     <div class="bg-white shadow-sm rounded-2xl border border-stone-200 overflow-hidden p-6 sm:p-8">
-        <form action="{{ route('books.update', $book->id) }}" method="POST" class="space-y-5">
+        <form action="{{ route('books.update', $book->id) }}" method="POST" class="space-y-5" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -79,6 +79,22 @@
                         </option>
                     @endforeach
                 </select>
+            </div>
+
+            <!-- UPLOAD COVER -->
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-stone-700 mb-1">Cover Buku (Opsional)</label>
+                
+                <!-- Preview Cover Lama jika ada -->
+                @if($book->cover)
+                    <div class="mb-2">
+                        <img src="{{ asset('storage/' . $book->cover) }}" alt="Cover Lama" class="w-20 h-28 object-cover rounded-lg border border-stone-200">
+                        <p class="text-xs text-stone-400 mt-1">Cover saat ini</p>
+                    </div>
+                @endif
+
+                <input type="file" name="cover" accept="image/*" class="w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#1E4D3B] file:text-white hover:file:bg-[#16382b] cursor-pointer">
+                <p class="text-xs text-stone-500 mt-1">Format: JPG, PNG, JPEG (Maks. 2MB)</p>
             </div>
 
             <!-- Tombol Aksi -->

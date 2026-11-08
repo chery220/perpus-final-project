@@ -20,6 +20,7 @@ class Book extends Model
         'stok',
         'sampul',
         'category_id',
+        'cover',
     ];
     
     public function category(): BelongsTo

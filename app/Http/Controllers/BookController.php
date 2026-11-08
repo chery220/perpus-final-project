@@ -13,7 +13,6 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-
         $books = Book::when($search, function ($query, $search) {
             return $query->where('judul', 'like', "%{$search}%")
                         ->orWhere('penulis', 'like', "%{$search}%");
@@ -25,13 +24,17 @@ class BookController extends Controller
     public function create()
     {
         $categories = \App\Models\Category::all(); 
-
         return view('books.create', compact('categories'));
     }
 
     public function store(StoreBookRequest $request)
     {
+
         $validated = $request->validated();
+
+        if ($request->hasFile('cover')) {
+            $validated['cover'] = $request->file('cover')->store('covers', 'public');
+        }
 
         Book::create($validated);
 
@@ -41,10 +44,9 @@ class BookController extends Controller
 
     public function show(string $id)
     {
-    $book = Book::with('category')->findOrFail($id);
-
-    return view('books.show', compact('book'));
-}
+        $book = Book::with('category')->findOrFail($id);
+        return view('books.show', compact('book'));
+    }
 
     public function edit(string $id)
     {
@@ -57,7 +59,6 @@ class BookController extends Controller
     public function update(Request $request, string $id)
     {
         $book = Book::findOrFail($id);
-
         $validated = $request->validate([
             'judul' => 'required|string|max:200',
             'penulis' => 'required|string|max:100',
@@ -66,7 +67,19 @@ class BookController extends Controller
             'isbn' => 'nullable|string|max:20',
             'stok' => 'required|integer|min:0',
             'category_id' => 'required|integer|exists:categories,id',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        // logika jika ada file yang diunggah
+        if ($request->hasFile('cover')) {
+
+            // Hapus cover lama jika ada di storage
+            if ($book->cover && \Storage::disk('public')->exists($book->cover)) {
+                \Storage::disk('public')->delete($book->cover);
+            }
+            // Simpan cover baru
+            $validated['cover'] = $request->file('cover')->store('covers', 'public');
+        }
 
         $book->update($validated);
 
