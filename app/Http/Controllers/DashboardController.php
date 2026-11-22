@@ -25,7 +25,10 @@ class DashboardController extends Controller
 
 
         //Data baru untuk tampilan buku Best Seller
-        $bestSellers = Book::orderBy('stok', 'asc')->take(5)->get(); // Buku dengan stok terendah
+        $bestSellers = Book::withCount('loanItems')
+            ->orderByDesc('loan_items_count')
+            ->take(5)
+            ->get();
         $categories = Category::all();                               // Semua kategori untuk tombol filter
 
         $books = Book::when($selectedCategory, function ($query, $selectedCategory) {

@@ -9,4 +9,9 @@ use App\Models\Book;
 class Category extends Model
 {
     protected $fillable = ['nama_kategori'];
+
+    public function books(): HasMany
+    {
+        return $this->hasMany(Book::class);
+    }
 }
