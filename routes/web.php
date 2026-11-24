@@ -18,6 +18,8 @@ use App\Models\Loan;
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/loans/report/export', [LoanController::class, 'exportReport'])
+    ->name('loans.report.export');
 
 // Protected Routes (Harus Login)
 Route::middleware(['auth'])->group(function () {

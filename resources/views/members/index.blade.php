@@ -9,11 +9,34 @@
         <div>
             <h1 class="text-2xl font-bold text-[#1E4D3B]">Daftar Anggota</h1>
             <p class="text-stone-600 mt-1">Kelola data mahasiswa dan anggota perpustakaan yang terdaftar.</p>
+            <form action="{{ route('members.index') }}" method="GET" class="mt-4 flex items-center gap-2">
+            <input type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari berdasarkan nama, NIM, atau email anggota..."
+                class="w-full px-4 py-2.5 text-sm text-stone-800 placeholder-stone-400 bg-white border border-stone-200 rounded-full focus:outline-none focus:border-[#1E4D3B] transition">
+
+            <button type="submit"
+                    class="px-5 py-2.5 text-sm font-semibold text-white bg-[#1E4D3B] hover:opacity-90 rounded-full shrink-0 transition">
+                Cari
+            </button>
+
+            @if(request('search'))
+                <a href="{{ route('members.index') }}"
+                class="px-4 py-2.5 text-sm font-medium text-stone-600 hover:text-[#1E4D3B] shrink-0 transition">
+                    Reset
+                </a>
+            @endif
+        </form>
         </div>
+        
         <a href="{{ route('members.create') }}" class="inline-flex items-center px-4 py-2.5 rounded-xl font-medium text-white bg-[#1E4D3B] hover:bg-[#16382b] transition shadow-sm text-sm">
             + Tambah Anggota
         </a>
     </div>
+    
+
+    
 
     <!-- Alert Sukses -->
     @if(session('success'))

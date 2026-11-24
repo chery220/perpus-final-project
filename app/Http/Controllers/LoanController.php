@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 
 class LoanController extends Controller
 {
@@ -41,6 +42,71 @@ class LoanController extends Controller
         return view('loans.report', [
             'loans' => $body['data'] ?? [],
             'meta' => $body['meta'] ?? null,
+        ]);
+    }
+
+
+    public function exportReport(Request $request)
+    {
+        $period = $request->query('period', 'daily'); // daily | weekly | monthly
+        $now = Carbon::now();
+
+        $query = Loan::with(['member', 'user', 'loanItems.book'])->orderBy('id', 'desc');
+
+        if ($period === 'weekly') {
+            $startDate = $now->copy()->startOfWeek()->toDateString();
+            $endDate = $now->copy()->endOfWeek()->toDateString();
+            $query->whereBetween('tanggal_pinjam', [$startDate, $endDate]);
+        } elseif ($period === 'monthly') {
+            $startDate = $now->copy()->startOfMonth()->toDateString();
+            $endDate = $now->copy()->endOfMonth()->toDateString();
+            $query->whereBetween('tanggal_pinjam', [$startDate, $endDate]);
+        } else {
+            $period = 'daily';
+            $targetDate = $now->toDateString();
+            $query->whereDate('tanggal_pinjam', $targetDate);
+        }
+
+        $loans = $query->get();
+        $filename = "laporan-peminjaman-{$period}-{$now->format('Y-m-d')}.csv";
+
+        return response()->streamDownload(function () use ($loans) {
+            $handle = fopen('php://output', 'w');
+
+            // UTF-8 BOM agar karakter dan tanda baca rapi saat dibuka di Excel
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header kolom sesuai tampilan laporan
+            fputcsv($handle, [
+                'ID',
+                'Anggota',
+                'Petugas',
+                'Buku',
+                'Tgl Pinjam',
+                'Tgl Kembali',
+                'Status',
+            ], ';');
+
+            foreach ($loans as $loan) {
+                $books = $loan->loanItems
+                    ->map(fn ($item) => $item->book->judul ?? null)
+                    ->filter()
+                    ->implode(', ');
+
+                fputcsv($handle, [
+                    '#' . $loan->id,
+                    $loan->member->nama ?? '-',
+                    $loan->user->name ?? '-',
+                    $books !== '' ? $books : '-',
+                    $loan->tanggal_pinjam ? Carbon::parse($loan->tanggal_pinjam)->format('Y-m-d') : '-',
+                    $loan->tanggal_kembali ? Carbon::parse($loan->tanggal_kembali)->format('Y-m-d') : '-',
+                    $loan->status ?? '-',
+                ], ';');
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
@@ -105,8 +171,8 @@ class LoanController extends Controller
     public function edit($id)
     {
         $loan = Loan::with('loanItems')->findOrFail($id);
-        $members = Member::all(); // <-- Pastikan baris ini ada
-        $books = Book::all();     // <-- Pastikan baris ini juga ada
+        $members = Member::all(); // 
+        $books = Book::all();     //
 
         return view('loans.edit', compact('loan', 'members', 'books'));
     }

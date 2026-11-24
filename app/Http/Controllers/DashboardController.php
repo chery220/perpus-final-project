@@ -29,7 +29,9 @@ class DashboardController extends Controller
             ->orderByDesc('loan_items_count')
             ->take(5)
             ->get();
-        $categories = Category::all();                               // Semua kategori untuk tombol filter
+        
+        //logic categoroy filter
+        $categories = Category::all();            
 
         $books = Book::when($selectedCategory, function ($query, $selectedCategory) {
         return $query->where('category_id', $selectedCategory);
